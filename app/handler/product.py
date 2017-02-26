@@ -4,6 +4,7 @@ import connexion
 from connexion import NoContent
 from psycopg2 import IntegrityError
 
+from app.authorization import check_auth
 from app.db import dbconn
 from app.utils import strip_column_prefix, slugger
 
@@ -11,6 +12,7 @@ logger = logging.getLogger('slo-product')
 
 
 def get():
+    check_auth('test')
     with dbconn() as conn:
         cur = conn.cursor()
         cur.execute('''SELECT p.*, pg_name AS pg_product_group_name, pg_slug AS pg_product_group_slug, pg_department
@@ -44,6 +46,7 @@ def add(product):
 
 
 def delete(product):
+    check_auth('test')
     with dbconn() as conn:
         cur = conn.cursor()
         cur.execute('''DELETE FROM zsm_data.product WHERE p_slug = %s''', (product,))
